@@ -1,5 +1,17 @@
 #!/bin/bash
 
+######################################################################
+######################################################################
+# 
+# Contents:
+#   1). Basic project setup - Express
+#   2). Building Docker image & verifying working directory
+#   3). Running Express server, cURL Testing & Log Fetching
+# 
+######################################################################
+######################################################################
+
+
 ##############################################
 ##############################################
 # 
@@ -28,87 +40,145 @@ node index.js
 
 
 # Build container
-cd simpleServers
-docker build -f ../dockerfiles/simpleServers/nodeAlpine.Dockerfile -t simpler-server-app .
+docker build -f dockerfiles/simpleServers/nodeAlpine.Dockerfile -t simpler-server-app simpleServers/
 
 
 # Test run container
-docker run simpler-server-app node index.js --server 'Server-A'
-docker run simpler-server-app node index.js --server 'Server-B'
+docker run simpler-server-app ls -lh
 
 
 """
-2023-07-11 14:07:12 INFO:
-Displaying Requested Server = 'Server-A'
+total 76K
+-rwxrwxrwx    1 root     root        3.3K Jul 11 18:33 helper.sh
+-rwxrwxrwx    1 root     root        2.5K Jul 11 18:30 index.js
+drwxrwxrwx   75 root     root        4.0K Jul 11 18:26 node_modules
+-rwxrwxrwx    1 root     root       51.8K Jul 11 12:54 package-lock.json
+-rwxrwxrwx    1 root     root         441 Jul 11 12:54 package.json
+-rwxrwxrwx    1 root     root        1.9K Jul 11 17:37 server.js
+drwxrwxrwx    5 root     root        4.0K Jul 11 18:26 supporting
+"""
 
-2023-07-11 14:07:12 INFO: Parser {
+
+
+##############################################
+##############################################
+# 
+# 3). Run Web Server 
+# 
+###############################################
+###############################################
+
+
+# Run app listening on port 8000
+docker run -d -p 8000:8000 simpler-server-app node index.js --server 'Server-A' --port 8000
+docker logs "6527cbd17208"
+
+'''
+2023-07-11 19:02:04 INFO:
+Displaying Requested Server = 'Server-A'
+Displaying Requested Port = '8000'
+
+2023-07-11 19:02:04 INFO: Parser {
   argData: Map(3) {
     'Description' => 'Simple web server, for kubernetes tinkering with a Server-A & Server-B.',
     'Actions' => Map(0) {},
-    'Global Arguments' => Map(2) { 'State' => 1, 'Server' => [Map] }
+    'Global Arguments' => Map(3) { 'State' => 1, 'Server' => [Map], 'Port' => [Map] }
   }
 }
 
-2023-07-11 14:07:12 INFO: Initializing the message handler
+2023-07-11 19:02:04 INFO: Starting server
 
-2023-07-11 14:07:12 INFO: MessageHandler {
-  messageHasher: MessageHasher {
-    hasher: Hash {
-      _options: undefined,
-      [Symbol(kHandle)]: Hash {},
-      [Symbol(kState)]: [Object]
-    }
-  },
-  messageCipher: MessageEncryptor {
-    msgKey: <Buffer >,
-    msgIV: <Buffer >,
-    cipher: Cipheriv {
-      _decoder: null,
-      _options: undefined,
-      [Symbol(kHandle)]: CipherBase {}
-    },
-    deCipher: Decipheriv {
-      _decoder: null,
-      _options: undefined,
-      [Symbol(kHandle)]: CipherBase {}
-    }
-  }
+2023-07-11 19:02:04 INFO: Server configured on Port '8000', host '0.0.0.0'
+'''
+
+
+# Fetch welcom message
+curl http://localhost:8000/ | jq
+
+'''
+{
+  "Hello": "World!!!"
+}
+'''
+
+# Fetch hash of message
+curl http://localhost:8000/hashing \
+  -X POST \
+  -H "Content-Type: application/json" \
+  -d '{"message": "xdfrtyu7i8opl;lkj"}' \
+ | jq
+
+'''
+{
+  "Hash": "fa61e928fb427485fd3161df3bfb951ba81fd96c0e6a57679e13b9bee08ff53a",
+  "Salt": "dea40789-8000-45af-89c3-d5d22eafa345"
+}
+'''
+
+
+# Encrypt a message
+curl http://localhost:8000/encrypting \
+  -X POST \
+  -H "Content-Type: application/json" \
+  -d '{"message": "xdfrtyu7i8opl;lkj"}' \
+ | jq
+
+'''
+{
+  "Message": "xdfrtyu7i8opl;lkj",
+  "EncryptedMessage": "bfa5087dbcb43529975cabaf464c70a5fdc588905c43cbe3afd24f9afa2fbbb7"
+}
+'''
+
+
+# Decrypt a message
+curl http://localhost:8000/decrypting \
+  -X POST \
+  -H "Content-Type: application/json" \
+  -d '{"message": "bfa5087dbcb43529975cabaf464c70a5fdc588905c43cbe3afd24f9afa2fbbb7"}' \
+ | jq
+
+'''
+{
+  "Message": "bfa5087dbcb43529975cabaf464c70a5fdc588905c43cbe3afd24f9afa2fbbb7",
+  "DecryptedMesssage": "xdfrtyu7i8opl;lkj"
+}
+'''
+
+
+# Display server logs following tests
+docker logs 6527cbd17208
+
+'''
+2023-07-11 19:02:33 INFO: A new test request has come in
+
+2023-07-11 19:02:49 INFO: A new hashing request has come in
+
+2023-07-11 19:02:49 INFO: { message: 'xdfrtyu7i8opl;lkj' }
+
+2023-07-11 19:02:49 INFO: {
+  Message: undefined,
+  Hash: 'fa61e928fb427485fd3161df3bfb951ba81fd96c0e6a57679e13b9bee08ff53a',
+  Salt: 'dea40789-8000-45af-89c3-d5d22eafa345'
 }
 
-2023-07-11 14:07:12 INFO: Generated Salt:
-bd3680da-6847-4ca7-905f-7cc6a30a6fee
+2023-07-11 19:03:05 INFO: A new encryption request has come in
 
-2023-07-11 14:07:12 INFO: Generated hash of 'hello':
-2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824
+2023-07-11 19:03:05 INFO: { message: 'xdfrtyu7i8opl;lkj' }
 
-2023-07-11 14:07:12 INFO: {
-  Message: 'hello',
-  Hash: '94f58da1e61edfaaa1a734094a691bece31c685589b7e795b0791d236e8b3692',
-  Salt: '75501924-c573-4e27-a84d-b41a83f27ea5'
+2023-07-11 19:03:05 INFO: {
+  Message: 'xdfrtyu7i8opl;lkj',
+  EncryptedMessage: 'bfa5087dbcb43529975cabaf464c70a5fdc588905c43cbe3afd24f9afa2fbbb7'
 }
 
-2023-07-11 14:07:12 INFO: Encrypting message
+2023-07-11 19:03:29 INFO: A new decryption request has come in
 
-2023-07-11 14:07:12 INFO: {
-  Message: 'hello',
-  EncryptedMessage: '23f3365ab2723c3db6b6e1a0ee3f2dba'
+2023-07-11 19:03:29 INFO: {
+  message: 'bfa5087dbcb43529975cabaf464c70a5fdc588905c43cbe3afd24f9afa2fbbb7'
 }
 
-2023-07-11 14:07:12 INFO: {
-  Message: 'hello',
-  EncryptedMessage: '23f3365ab2723c3db6b6e1a0ee3f2dba'
+2023-07-11 19:03:29 INFO: {
+  Message: 'bfa5087dbcb43529975cabaf464c70a5fdc588905c43cbe3afd24f9afa2fbbb7',
+  DecryptedMesssage: 'xdfrtyu7i8opl;lkj'
 }
-
-2023-07-11 14:07:12 INFO: Decrypting message
-
-2023-07-11 14:07:12 INFO: {
-  Message: '23f3365ab2723c3db6b6e1a0ee3f2dba',
-  DecryptedMesssage: 'hello'
-}
-
-2023-07-11 14:07:12 INFO: {
-  Message: '23f3365ab2723c3db6b6e1a0ee3f2dba',
-  DecryptedMesssage: 'hello'
-}
-
-"""
+'''
