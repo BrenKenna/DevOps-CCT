@@ -71,7 +71,7 @@ drwxrwxrwx    5 root     root        4.0K Jul 11 18:26 supporting
 
 # Run app listening on port 8000
 docker run -d -p 8000:8000 simpler-server-app node index.js --server 'Server-A' --port 8000
-docker logs "6527cbd17208"
+docker logs "80bb83cc36ee"
 
 '''
 2023-07-11 19:02:04 INFO:
@@ -110,8 +110,9 @@ curl http://localhost:8000/hashing \
 
 '''
 {
-  "Hash": "fa61e928fb427485fd3161df3bfb951ba81fd96c0e6a57679e13b9bee08ff53a",
-  "Salt": "dea40789-8000-45af-89c3-d5d22eafa345"
+  "Message": "xdfrtyu7i8opl;lkj",
+  "Hash": "ad1ff26548d32ce071d6b1dec13f3238dc84b136262d2fc495bf7123a2655ccf",
+  "Salt": "bd3ff694-d6d6-4ea1-a2dd-a9b16bad8d64"
 }
 '''
 
@@ -157,9 +158,9 @@ docker logs 6527cbd17208
 2023-07-11 19:02:49 INFO: { message: 'xdfrtyu7i8opl;lkj' }
 
 2023-07-11 19:02:49 INFO: {
-  Message: undefined,
-  Hash: 'fa61e928fb427485fd3161df3bfb951ba81fd96c0e6a57679e13b9bee08ff53a',
-  Salt: 'dea40789-8000-45af-89c3-d5d22eafa345'
+  Message: 'xdfrtyu7i8opl;lkj',
+  Hash: 'ad1ff26548d32ce071d6b1dec13f3238dc84b136262d2fc495bf7123a2655ccf',
+  Salt: 'bd3ff694-d6d6-4ea1-a2dd-a9b16bad8d64'
 }
 
 2023-07-11 19:03:05 INFO: A new encryption request has come in

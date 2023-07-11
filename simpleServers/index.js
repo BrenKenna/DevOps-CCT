@@ -64,7 +64,7 @@ app.post("/hashing", (req, resp) => {
     // Handle input message
     appLogger.info(`A new hashing request has come in`);
     appLogger.info(req.body);
-    let output = msgHandler.hashMsgWithSalt(req.body.messagey);
+    let output = msgHandler.hashMsgWithSalt(req.body.message);
     appLogger.info(output);
 
     // Write and send resonse
