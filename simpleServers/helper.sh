@@ -29,7 +29,7 @@ node index.js
 
 # Build container
 cd simpleServers
-docker build -f ../dockerfiles/justNode/Dockerfile -t simpler-server-app .
+docker build -f ../dockerfiles/simpleServers/nodeAlpine.Dockerfile -t simpler-server-app .
 
 
 
@@ -64,3 +64,40 @@ Displaying Requested Server = 'Server-B'
 ...
 
 """
+
+
+
+##############################################
+##############################################
+# 
+# 3). Server Code:
+#   - ServerA hashes input msg
+#   - ServerB encrypts input msg
+# 
+# 
+# References:
+#  1). Crypto Doc: https://nodejs.org/api/crypto.html
+# 
+###############################################
+###############################################
+
+
+``` {node.js}
+
+# Import
+const crypto = require('crypto');
+
+
+# Hashing
+let msg, msgHash;
+const hasher = crypto.createHash('sha-256');
+
+msg = 'hello';
+hasher.update('hello');
+msgHash = hasher.digest('hex');
+console.log(`
+Original Message:\t${msg}
+Hashed Message:\t${msgHash}
+`);
+
+```
