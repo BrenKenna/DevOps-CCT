@@ -70,8 +70,8 @@ drwxrwxrwx    5 root     root        4.0K Jul 11 18:26 supporting
 
 
 # Run app listening on port 8000
-docker run -d -p 8000:8000 simpler-server-app node index.js --server 'Server-A' --port 8000
-docker logs "80bb83cc36ee"
+dockerContainer=$(docker run -d -p 8000:8000 simpler-server-app node index.js --server 'Server-A' --port 8000)
+docker logs "$dockerContainer"
 
 '''
 2023-07-11 19:02:04 INFO:
@@ -148,7 +148,7 @@ curl http://localhost:8000/decrypting \
 
 
 # Display server logs following tests
-docker logs 6527cbd17208
+docker logs "$dockerContainer"
 
 '''
 2023-07-11 19:02:33 INFO: A new test request has come in
