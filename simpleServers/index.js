@@ -9,15 +9,12 @@ const
     MessageHandler = require('./supporting/messageHandler/MessageHandler')
 ;
 
-// Configure cmd-line arg parser & log4js
+// Configure cmd-line arg parser
 const parser = new Parser();
-
-// Configure
-let server;
 parser.setDescription("Simple web server, for kubernetes tinkering with a Server-A & Server-B.");
 parser.addArg("Server", "Which server to run", "-S,--server");
 parser.updateGlobalVariables();
-server = parser.getGlobalArgumentValue("Server");
+const server = parser.getGlobalArgumentValue("Server");
 appLogger.info(`
 Displaying Requested Server = '${server}'`);
 appLogger.info(parser);
