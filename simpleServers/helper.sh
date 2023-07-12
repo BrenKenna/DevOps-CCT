@@ -69,21 +69,61 @@ drwxrwxrwx    5 root     root        4.0K Jul 11 18:26 supporting
 
 
 # Run app listening on port 8000
-dockerContainer=$(docker run -d -p 8000:8000 simpler-server-app node index.js --server 'Server-A' --port 8000)
+dockerContainer=$(docker run -d -p 8000:8000 simpler-server-app node index.js --server 'Server-C' --port 8000)
 docker logs "$dockerContainer"
 
 '''
-2023-07-12 10:45:24 INFO:
+
+--> With Server-A
+2023-07-12 13:44:01.812 INFO:
 Displaying Requested Server = 'Server-A'
 Displaying Requested Port = '8000'
 
-2023-07-12 10:45:24 INFO: Parser {
+2023-07-12 13:44:01.815 INFO: Parser {
   argData: Map(3) {
     'Description' => 'Simple web server, for kubernetes tinkering with a Server-A & Server-B.',
     'Actions' => Map(0) {},
     'Global Arguments' => Map(3) { 'State' => 1, 'Server' => [Map], 'Port' => [Map] }
   }
 }
+2023-07-12 13:44:01.818 INFO: ServerA detected, exposing Hashing Endpoints
+2023-07-12 13:44:01.818 INFO: Starting server
+2023-07-12 13:44:01.822 INFO: Server configured on Port '8000', host '0.0.0.0'
+
+
+--> With Server-B
+2023-07-12 13:44:48.936 INFO:
+Displaying Requested Server = 'Server-B'
+Displaying Requested Port = '8000'
+
+2023-07-12 13:44:48.938 INFO: Parser {
+  argData: Map(3) {
+    'Description' => 'Simple web server, for kubernetes tinkering with a Server-A & Server-B.',
+    'Actions' => Map(0) {},
+    'Global Arguments' => Map(3) { 'State' => 1, 'Server' => [Map], 'Port' => [Map] }
+  }
+}
+2023-07-12 13:44:48.941 INFO: ServerB detected, exposing Encrypting Endpoints
+2023-07-12 13:44:48.941 INFO: Starting server
+2023-07-12 13:44:48.944 INFO: Server configured on Port '8000', host '0.0.0.0'
+
+
+--> With the hidden ServerC
+2023-07-12 13:45:49.623 INFO:
+Displaying Requested Server = 'Server-C'
+Displaying Requested Port = '8000'
+
+2023-07-12 13:45:49.625 INFO: Parser {
+  argData: Map(3) {
+    'Description' => 'Simple web server, for kubernetes tinkering with a Server-A & Server-B.',
+    'Actions' => Map(0) {},
+    'Global Arguments' => Map(3) { 'State' => 1, 'Server' => [Map], 'Port' => [Map] }
+  }
+}
+2023-07-12 13:45:49.628 WARN: Unable to detect which server to run, exposing hashing & encrypted endpoints
+2023-07-12 13:45:49.628 INFO: Starting server
+2023-07-12 13:45:49.631 INFO: Server configured on Port '8000', host '0.0.0.0'
+
 '''
 
 

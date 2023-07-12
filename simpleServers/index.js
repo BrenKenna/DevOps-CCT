@@ -12,7 +12,7 @@ const
     Parser = require('./supporting/arg_parser/parser'),
     appLogger = require('./supporting/logging/appLogger'),
     hashingRouter = require('./Routes/hashingRouter'),
-    cipherRouter = require('./Routes/cipherRouter');
+    cipherRouter = require('./Routes/cipherRouter')
 ;
 
 
@@ -29,7 +29,7 @@ parser.addArg("Server", "Which server to run", "-S,--server");
 parser.addArg("Port", "Which port to listen on", "-P,--port");
 parser.updateGlobalVariables();
 const
-    server = parser.getGlobalArgumentValue("Server");
+    server = parser.getGlobalArgumentValue("Server"),
     port = parser.getGlobalArgumentValue("Port")
 ;
 appLogger.info(`

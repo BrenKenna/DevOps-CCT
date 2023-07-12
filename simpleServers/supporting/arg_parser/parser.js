@@ -1,6 +1,8 @@
 /**
  * 
- * Class to hold and update command line argument data
+ * Class to hold and update command line argument data.
+ *  Multiple arguments for a flag must be non-space delimited, and 
+ *   handled externally to this parser.
  * 
  * Includes methods for:
  *      i). Broad getters/setters for argData map.
@@ -182,25 +184,19 @@ class Parser{
     // Update action argument
     updateActionArgs() {
 
-        // Initalize variables
-        let actionInd;
-        let action, argument, j;
-        let argvSlice;
-        let argInd
-
         // Scan each action present in argv
-        for ( action of this.getActions().keys() ) {
-            actionInd = process.argv.indexOf(action);
+        for ( let action of this.getActions().keys() ) {
+            let actionInd = process.argv.indexOf(action);
             if( actionInd != -1 ){
         
                 /// Set state from expected to assigned
                 this.getAction(action).set("State", 1);
 
                 // Slice argv and search it for arguments
-                for (argument of this.getAction(action).keys()){
+                for (let argument of this.getAction(action).keys()){
                     if (argument != "State") {
-                        for (j of this.getActionArg(action, argument).get("Keys").get("search")){
-                            argInd = process.argv.indexOf(j);
+                        for (let j of this.getActionArg(action, argument).get("Keys").get("search")){
+                            let argInd = process.argv.indexOf(j);
                             if ( argInd >= 0 ) {
                                 this.getActionArg(action, argument).get("Keys").set("value", process.argv[argInd+1]);
                                 this.getActionArg(action, argument).set("State", 1);
@@ -223,10 +219,9 @@ class Parser{
 
         // Initalize variables
         let args = [];
-        let arg;
 
         // Determine active actions
-        for (arg of this.getGlobalArguments().keys() ) {
+        for (let arg of this.getGlobalArguments().keys() ) {
             
             // Pass if key is state
             if ( arg != "State") {
@@ -249,8 +244,7 @@ class Parser{
 
         // Determine active actions
         let actions = [];
-        let action;
-        for (action of this.getActions().keys() ) {
+        for (let action of this.getActions().keys() ) {
             if (this.getAction(action).get("State") == 1) {
                 actions.push(action);
             }
@@ -266,8 +260,7 @@ class Parser{
 
         // Determine active arguments of an action
         let actionArgs = [];
-        let arg;
-        for ( arg of this.getAction(action).keys()){
+        for (let arg of this.getAction(action).keys()){
 
             // Pass on action 
             if (arg != "State") {
