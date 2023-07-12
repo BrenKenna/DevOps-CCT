@@ -299,7 +299,7 @@ class Parser{
         if (this.getActiveGlobalArgs().indexOf(arg) >= 0 ){
             argValue = this.getArgument(arg).get("Keys").get("value");
         } else {
-            argValue = undefined;
+            argValue = "null";
         }
 
         // Return value
@@ -317,7 +317,7 @@ class Parser{
         if ( this.getActiveActionArgs(action).indexOf(arg) >= 0 ) {
             argValue = this.getActionArg(action, arg).get("Keys").get("value");
         } else {
-            argValue = undefined;
+            argValue = "null";
         }
 
         // Return argValue

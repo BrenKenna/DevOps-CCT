@@ -9,7 +9,6 @@
 const
     express = require('express'),
     bodyParser = require('body-parser'),
-    MessageHandler = require('./supporting/messageHandler/MessageHandler'),
     Parser = require('./supporting/arg_parser/parser'),
     appLogger = require('./supporting/logging/appLogger'),
     hashingRouter = require('./Routes/hashingRouter'),
@@ -27,7 +26,7 @@ const
 const parser = new Parser();
 parser.setDescription("Simple web server, for kubernetes tinkering with a Server-A & Server-B.");
 parser.addArg("Server", "Which server to run", "-S,--server");
-parser.addArg("Port", "Which port to listen on", "-P,--port")
+parser.addArg("Port", "Which port to listen on", "-P,--port");
 parser.updateGlobalVariables();
 const
     server = parser.getGlobalArgumentValue("Server");
@@ -35,7 +34,7 @@ const
 ;
 appLogger.info(`
 Displaying Requested Server = '${server}'
-Displaying Requested Port = '${port}'`);
+Displaying Requested Port = '${port}'\n`);
 appLogger.info(parser);
 
 
@@ -47,7 +46,6 @@ appLogger.info(parser);
 
 // Configure http server & the message handler
 const
-    msgHandler = new MessageHandler(),
     app = express(),
     host = '0.0.0.0'
 ;
@@ -73,12 +71,25 @@ app.get("/", (req, resp) => {
 });
 
 
-// Hashing endpoints: If serverA then use
-app.use("/hashing", hashingRouter);
+// Expose hashing if ServerA
+if ( server.toLowerCase() === "servera" || server.toLowerCase() === "server-a" ) {
+    appLogger.info("ServerA detected, exposing Hashing Endpoints");
+    app.use("/hashing", hashingRouter);
+}
 
+// Otherwise expose encryption if ServerB
+else if ( server.toLowerCase() === "serverb" || server.toLowerCase() === "server-b" ) {
+    appLogger.info("ServerB detected, exposing Encrypting Endpoints");
+    app.use("/encrypting", cipherRouter);
+}
 
-// Encryption endpoints: If serverB then use
-app.use("/encrypting", cipherRouter);
+// Otherwise expose both, and log warning
+else {
+    appLogger.warn("Unable to detect which server to run, exposing hashing & encrypted endpoints");
+    app.use("/hashing", hashingRouter);
+    app.use("/encrypting", cipherRouter);
+}
+
 
 
 /**
