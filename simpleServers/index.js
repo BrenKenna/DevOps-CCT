@@ -89,6 +89,6 @@ app.use("/encrypting", cipherRouter);
 
 // Start server
 appLogger.info("Starting server");
-app.listen(port, process.env.IP || '0.0.0.0', () => {
+app.listen(port, host, () => {
     appLogger.info(`Server configured on Port '${port}', host '${host}'`);
 });
