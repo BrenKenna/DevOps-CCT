@@ -1,2 +1,4 @@
 simpleServers/node_modules/
 simpleServers/package-lock.json
+simpleServers/testScripts/*/*.sh
+simpleServers/testScripts/*Tasks.sh

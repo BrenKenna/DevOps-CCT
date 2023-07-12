@@ -8,7 +8,9 @@ const
     express = require('express'),
     bodyParser = require('body-parser'),
     MessageHandler = require('./supporting/messageHandler/MessageHandler'),
-    appLogger = require('./supporting/logging/appLogger')
+    appLogger = require('./supporting/logging/appLogger'),
+    hashingRouter = require('./Routes/hashingRouter'),
+    cipherRouter = require('./Routes/cipherRouter');
 ;
 
 
@@ -58,46 +60,12 @@ app.get("/", (req, resp) => {
 });
 
 
-// Hashing endpoint
-app.post("/hashing", (req, resp) => {
-    
-    // Handle input message
-    appLogger.info(`A new hashing request has come in`);
-    appLogger.info(req.body);
-    let output = msgHandler.hashMsgWithSalt(req.body.message);
-    appLogger.info(output);
-
-    // Write and send resonse
-    resp.send(output);
-});
+// Hashing endpoints
+app.use("/hashing", hashingRouter);
 
 
-// Encryption endpoint
-app.post("/encrypting", (req, resp) => {
-    
-    // Handle input message
-    appLogger.info(`A new encryption request has come in`);
-    appLogger.info(req.body);
-    let output = msgHandler.encryptMsg(req.body.message)
-    appLogger.info(output);
-
-    // Write and send resonse
-    resp.send(output);
-});
-
-
-// Decryption endpoint
-app.post("/decrypting", (req, resp) => {
-    
-    // Handle input message
-    appLogger.info(`A new decryption request has come in`);
-    appLogger.info(req.body);
-    let output = msgHandler.decryptMsg(req.body.message);
-    appLogger.info(output);
-
-    // Write and send resonse
-    resp.send(output);
-});
+// Encryption endpoints
+app.use("/encrypting", cipherRouter);
 
 
 // Start server

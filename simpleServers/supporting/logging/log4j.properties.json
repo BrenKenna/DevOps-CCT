@@ -5,7 +5,7 @@
             "category": "outLog",
             "layout": {
                 "type": "pattern",
-                "pattern": "%d{yyyy-MM-dd hh:mm:ss} %p: %m%n"
+                "pattern": "%d{yyyy-MM-dd hh:mm:ss} %p: %m"
             }
         }
     },
