@@ -1,6 +1,6 @@
 
 const 
-    express = require('express');
+    express = require('express'),
     hashingControllers = require('../Controllers/hashingControllers')
 ;
 

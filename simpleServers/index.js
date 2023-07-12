@@ -1,13 +1,16 @@
 /**
- * Handle which server to run
+ * Handle which endpoints to expose for server
+ *  - ServerA = Hashing
+ *  - ServerB = Encryption
+ * 
  */
 
 // Fetch required libs
-const 
-    Parser = require('./supporting/arg_parser/parser'),
+const
     express = require('express'),
     bodyParser = require('body-parser'),
     MessageHandler = require('./supporting/messageHandler/MessageHandler'),
+    Parser = require('./supporting/arg_parser/parser'),
     appLogger = require('./supporting/logging/appLogger'),
     hashingRouter = require('./Routes/hashingRouter'),
     cipherRouter = require('./Routes/cipherRouter');
@@ -15,7 +18,9 @@ const
 
 
 /**
+ * 
  * Parse command line arguments for 
+ * 
  */
 
 // Configure cmd-line arg parser
@@ -35,7 +40,9 @@ appLogger.info(parser);
 
 
 /**
+ * 
  * Use args for spinning up server
+ * 
  */
 
 // Configure http server & the message handler
@@ -50,6 +57,12 @@ app.use(bodyParser.urlencoded({
 }));
 
 
+/**
+ * 
+ * Configure endpoints
+ * 
+ */
+
 // Testing
 app.get("/", (req, resp) => {
     appLogger.info(`A new test request has come in`);
@@ -60,13 +73,19 @@ app.get("/", (req, resp) => {
 });
 
 
-// Hashing endpoints
+// Hashing endpoints: If serverA then use
 app.use("/hashing", hashingRouter);
 
 
-// Encryption endpoints
+// Encryption endpoints: If serverB then use
 app.use("/encrypting", cipherRouter);
 
+
+/**
+ * 
+ * Start server
+ * 
+ */
 
 // Start server
 appLogger.info("Starting server");

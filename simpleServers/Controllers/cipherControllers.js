@@ -1,7 +1,6 @@
 
 // Fetch required libs
 const
-    express = require('express'),
     MessageHandler = require('../supporting/messageHandler/MessageHandler'),
     appLogger = require('../supporting/logging/appLogger')
 ;
