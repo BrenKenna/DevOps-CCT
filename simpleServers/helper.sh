@@ -40,11 +40,12 @@ node index.js
 
 
 # Build container
-docker build -f dockerfiles/simpleServers/nodeAlpine.Dockerfile -t simpler-server-app simpleServers/
-
+docker build -f dockerfiles/simpleServers/nodeAlpine.Dockerfile -t simple-server-app simpleServers/
+docker tag simple-server-app bkenna/simple-server-app:latest
+docker push simple-server-app
 
 # Test run container
-docker run simpler-server-app ls -lh
+docker run simple-server-app ls -lh
 
 
 """
@@ -62,15 +63,82 @@ drwxrwxrwx    5 root     root        4.0K Jul 11 18:26 supporting
 ##############################################
 ##############################################
 # 
-# 3). Run Web Server 
+# 3). Deploy Pod
+# 
+##############################################
+##############################################
+
+
+# Run test pod
+kubectl apply -f cluster\simpleServerA-Pod.yaml
+kubectl get pods
+kubectl describe pod simple-server-a
+
+'''
+NAME              READY   STATUS    RESTARTS   AGE
+simple-server-a   1/1     Running   0          8s
+
+Forwarding from 127.0.0.1:8000 -> 8000
+Forwarding from [::1]:8000 -> 8000
+
+Status:       Running
+IP:           10.1.0.39
+IPs:
+  IP:  10.1.0.39
+Containers:
+  simple-server-a:
+    Container ID:  docker://f75398c20e832565948e8497dbda7b6f680cd7a027a8d9f476c997f744bdda84
+    Image:         bkenna/simple-server-app
+    Image ID:      docker-pullable://bkenna/simple-server-app@sha256:53b3e1b4fd09d95326b03c481e4098d7ca7f9a0505ff67aeaf08c361d6d5851c
+    Port:          8000/TCP
+    Host Port:     8000/TCP
+    Command:
+      /usr/local/bin/node
+    Args:
+      index.js
+      --server
+      Server-A
+      --port
+      8000
+    State:          Running
+      Started:      Thu, 13 Jul 2023 22:44:09 +0100
+
+
+'''
+
+# Test:  10.1.0.38
+docker logs 42ded2828a77
+
+curl http://localhost:8000/encrypting/encrypt \
+  -X POST \
+  -H "Content-Type: application/json" \
+  -d '{"message": "xdfrtyu7i8opl;lkj"}' \
+ | jq
+
+
+'''
+2023-07-13 21:33:03.901 INFO: ServerA detected, exposing Hashing Endpoints
+2023-07-13 21:33:03.901 INFO: Starting server
+2023-07-13 21:33:03.907 INFO: Server configured on Port '8000', host '0.0.0.0'
+
+'''
+
+
+##############################################
+##############################################
+# 
+# 4). Run Web Server 
 # 
 ###############################################
 ###############################################
 
 
 # Run app listening on port 8000
-dockerContainer=$(docker run -d -p 8000:8000 simpler-server-app node index.js --server 'Server-C' --port 8000)
+dockerContainer=$(docker run -d -p 8000:8000 simple-server-app node index.js --server 'Server-C' --port 8000)
 docker logs "$dockerContainer"
+
+docker inspect $dockerContainer | jq
+docker inspect $dockerContainer | jq .[0].NetworkSettings.Networks.bridge.IPAddress
 
 '''
 
