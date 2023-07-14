@@ -3,10 +3,10 @@
 ######################################################################
 ######################################################################
 # 
-# Pushed Kubernetes client stuff, other was too busy
-# 
-# https://minikube.sigs.k8s.io/docs/tutorials/multi_node/
-# 
+# Contents:
+#      i). Run serverA in a Pod.
+#     ii). Deploy as Service.
+#    iii). Run all three
 # 
 ######################################################################
 ######################################################################
@@ -72,6 +72,7 @@ Containers:
 #
 ######################################
 ######################################
+
 
 # Run simpleServerA deployment
 kubectl apply -f cluster\simpleServerA-deployment.yaml
@@ -208,3 +209,111 @@ Displaying Requested Port = '8000'
 
 '''
 
+
+######################################
+######################################
+#
+# 3). Deploy a Service
+#
+######################################
+######################################
+
+
+# See what happens
+kubectl apply -f cluster\simpleServer-deployment.yaml
+kubectl expose deployment simple-server --type=NodePort --name=simple-server
+
+
+'''
+
+kubectl describe services simple-server
+Name:                     simple-server
+Namespace:                default
+Labels:                   app.kubernetes.io/component=yolo
+                          app.kubernetes.io/name=simple-server
+Annotations:              <none>
+Selector:                 app.kubernetes.io/component=yolo,app.kubernetes.io/name=simple-server
+Type:                     NodePort
+IP Family Policy:         SingleStack
+IP Families:              IPv4
+IP:                       10.110.145.96
+IPs:                      10.110.145.96
+LoadBalancer Ingress:     localhost
+Port:                     port-1  8000/TCP
+TargetPort:               8000/TCP
+NodePort:                 port-1  30628/TCP
+Endpoints:                10.1.0.69:8000
+Port:                     port-2  8001/TCP
+TargetPort:               8001/TCP
+NodePort:                 port-2  30719/TCP
+Endpoints:                10.1.0.69:8001
+Port:                     port-3  8002/TCP
+TargetPort:               8002/TCP
+NodePort:                 port-3  30228/TCP
+Endpoints:                10.1.0.69:8002
+Session Affinity:         None
+External Traffic Policy:  Cluster
+Events:                   <none>
+
+'''
+
+
+# Test hashing requests: ServerA
+curl --silent http://localhost:30628/hashing/hashMessageWithSalt \
+  -X POST \
+  -H "Content-Type: application/json" \
+  -d '{"message": "xdfrtyu7i8opl;lkj"}' \
+| jq .
+
+'''
+{
+  "Message": "xdfrtyu7i8opl;lkj",
+  "Hash": "55de1e35d8b49e9990726d27187b4153bfee4558a39df51efa800b46b42a9520",
+  "Salt": "f96f80c7-e35b-4af7-84bc-778022ea5513"
+}
+'''
+
+
+# Test encryption: ServerB
+curl --silent http://localhost:30719/encrypting/encrypt \
+  -X POST \
+  -H "Content-Type: application/json" \
+  -d '{"message": "xdfrtyu7i8opl;lkj"}' \
+| jq .
+
+'''
+{
+  "Message": "xdfrtyu7i8opl;lkj",
+  "EncryptedMessage": "dc77e8d78882353b4cf05adfb054979561a308841cb00cbf199433fc787c3c76"
+}
+'''
+
+# Test both hashing & encryption: ServerC
+curl --silent http://localhost:30228/encrypting/encrypt \
+  -X POST \
+  -H "Content-Type: application/json" \
+  -d '{"message": "xdfrtyu7i8opl;lkj"}' \
+| jq .
+
+curl --silent http://localhost:30228/hashing/hashMessageWithSalt \
+  -X POST \
+  -H "Content-Type: application/json" \
+  -d '{"message": "xdfrtyu7i8opl;lkj"}' \
+| jq .
+
+
+'''
+
+{
+  "Message": "xdfrtyu7i8opl;lkj",
+  "EncryptedMessage": "2143560b8cad53ff6ce4d5c40ac284577efa708f23f35de2b568b9aa8938c602"
+}
+
+
+{
+  "Message": "xdfrtyu7i8opl;lkj",
+  "Hash": "e4b68580f34c7e64347e71dacf89c7ea41818ad2e0aa28b151a3164bdc45c4eb",
+  "Salt": "b2a3136c-0d52-4877-830b-022e321a6b23"
+}
+
+'''
