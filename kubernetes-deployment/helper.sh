@@ -437,7 +437,6 @@ curl --silent http://localhost:31496/hashing/hashMessageWithSalt \
 '''
 
 
-
 # Kill services and deployments
 kubectl delete service/simple-server-a service/simple-server-b service/simple-server-c
 kubectl delete deployment/simple-server-a deployment/simple-server-b deployment/simple-server-c

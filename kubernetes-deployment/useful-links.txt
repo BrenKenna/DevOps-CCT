@@ -1,0 +1,31 @@
+Kubernetes Background:
+
+https://kubernetes.io/docs/concepts/overview/components/ 
+
+https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/
+
+https://kubernetes.io/docs/tasks/administer-cluster/namespaces/#creating-a-new-namespace
+
+https://kubernetes-tutorial.schoolofdevops.com/configuring_authentication_and_authorization/
+
+https://kubernetes.io/docs/reference/access-authn-authz/rbac/
+
+
+---------------------------
+
+Side things
+
+While alot work in the below, particularly what the above sits on.
+Processes involved, programmatic approaches taken in the below are useful to have at hand & explore separately.
+
+https://docs.docker.com/engine/reference/commandline/network_create/
+
+https://kubernetes.io/docs/tasks/configure-pod-container/translate-compose-kubernetes/
+
+https://docs.docker.com/engine/reference/commandline/compose_up/
+
+https://github.com/kadensungbincho/apache-ranger-docker-poc/tree/main
+
+https://medium.com/devops-dudes/securing-spring-boot-rest-apis-with-keycloak-1d760b2004e
+
+https://hub.docker.com/r/linuxserver/openssh-server
