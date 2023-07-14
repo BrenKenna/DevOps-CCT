@@ -7,13 +7,13 @@
 #############################################
 
 # Declare required vars
-toHash=$(echo $RANDOM | md5sum -)
+toEncrypt=$(echo $RANDOM | md5sum -)
 
 # Send request
 date
 curl -s http://localhost:8000/encrypting/encrypt \
   -X POST \
   -H "Content-Type: application/json" \
-  -d "{\"message\": \"$toHash\"}" \
+  -d "{\"message\": \"$toEncrypt\"}" \
  | jq .
 date

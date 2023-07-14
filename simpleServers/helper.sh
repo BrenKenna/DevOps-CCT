@@ -24,7 +24,7 @@
 npm init
 
 # Install dependancies
-npm install path express log4js
+npm install -g path express log4js
 
 # Check 
 node index.js
@@ -63,66 +63,7 @@ drwxrwxrwx    5 root     root        4.0K Jul 11 18:26 supporting
 ##############################################
 ##############################################
 # 
-# 3). Deploy Pod
-# 
-##############################################
-##############################################
-
-
-# Run test pod
-kubectl apply -f cluster\simpleServerA-Pod.yaml
-
-'''
-NAME              READY   STATUS             RESTARTS      AGE   IP          NODE             NOMINATED NODE   READINESS GATES
-simple-server-a   0/1     ImagePullBackOff   0 (28m ago)   56m   10.1.0.52   docker-desktop   <none>           <none>
-
-Status:       Running
-IP:           10.1.0.39
-IPs:
-  IP:  10.1.0.39
-Containers:
-  simple-server-a:
-    Container ID:  docker://f75398c20e832565948e8497dbda7b6f680cd7a027a8d9f476c997f744bdda84
-    Image:         bkenna/simple-server-app
-    Image ID:      docker-pullable://bkenna/simple-server-app@sha256:53b3e1b4fd09d95326b03c481e4098d7ca7f9a0505ff67aeaf08c361d6d5851c
-    Port:          8000/TCP
-    Host Port:     8000/TCP
-    Command:
-      /usr/local/bin/node
-    Args:
-      index.js
-      --server
-      Server-A
-      --port
-      8000
-    State:          Running
-      Started:      Thu, 13 Jul 2023 22:44:09 +0100
-
-
-'''
-
-# Test:  10.1.0.38
-docker logs 42ded2828a77
-
-curl http://localhost:30375/hashing/hashMessageWithSalt \
-  -X POST \
-  -H "Content-Type: application/json" \
-  -d '{"message": "xdfrtyu7i8opl;lkj"}' \
- | jq .
-
-
-'''
-2023-07-13 21:33:03.901 INFO: ServerA detected, exposing Hashing Endpoints
-2023-07-13 21:33:03.901 INFO: Starting server
-2023-07-13 21:33:03.907 INFO: Server configured on Port '8000', host '0.0.0.0'
-
-'''
-
-
-##############################################
-##############################################
-# 
-# 4). Run Web Server 
+# 3). Run Web Server 
 # 
 ###############################################
 ###############################################
@@ -305,10 +246,19 @@ docker logs "$dockerContainer"
 ##############################################
 ##############################################
 # 
-# 3). See how parallel requests get handled
+# 4). See how parallel requests get handled
 # 
 ###############################################
 ###############################################
+
+
+########################################
+########################################
+#
+# 4-a). Hashing Server Tests
+# 
+########################################
+########################################
 
 
 # Set up task scripts, N = 1000
@@ -438,13 +388,17 @@ hashingTasks-500para.log:1000
 hashingTasks-90para.log:1000
 '''
 
-#############################################
-#############################################
+
+########################################
+########################################
 #
-# Encryption Tests
+# 4-b). Encryption Tests
+#
+# - Decryption not done, as it needs
+#     an encrypted message
 # 
-#############################################
-#############################################
+########################################
+########################################
 
 
 # Run encryption tests in parallel
