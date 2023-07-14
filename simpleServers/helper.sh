@@ -71,15 +71,10 @@ drwxrwxrwx    5 root     root        4.0K Jul 11 18:26 supporting
 
 # Run test pod
 kubectl apply -f cluster\simpleServerA-Pod.yaml
-kubectl get pods
-kubectl describe pod simple-server-a
 
 '''
-NAME              READY   STATUS    RESTARTS   AGE
-simple-server-a   1/1     Running   0          8s
-
-Forwarding from 127.0.0.1:8000 -> 8000
-Forwarding from [::1]:8000 -> 8000
+NAME              READY   STATUS             RESTARTS      AGE   IP          NODE             NOMINATED NODE   READINESS GATES
+simple-server-a   0/1     ImagePullBackOff   0 (28m ago)   56m   10.1.0.52   docker-desktop   <none>           <none>
 
 Status:       Running
 IP:           10.1.0.39
@@ -109,11 +104,11 @@ Containers:
 # Test:  10.1.0.38
 docker logs 42ded2828a77
 
-curl http://localhost:8000/encrypting/encrypt \
+curl http://localhost:30375/hashing/hashMessageWithSalt \
   -X POST \
   -H "Content-Type: application/json" \
   -d '{"message": "xdfrtyu7i8opl;lkj"}' \
- | jq
+ | jq .
 
 
 '''

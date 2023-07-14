@@ -1,6 +1,7 @@
-# YAML Validator: https://www.yamllint.com/
-# Valid Configs:  https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
-# Best Practice:  https://kubernetes.io/docs/concepts/configuration/overview/
+# YAML Validator:   https://www.yamllint.com/
+# Valid Configs:    https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+# Best Practice:    https://kubernetes.io/docs/concepts/configuration/overview/
+# Exposing Service: https://kubernetes.io/docs/tasks/access-application-cluster/port-forward-access-application-cluster/
 apiVersion: v1
 kind: Pod
 metadata:
@@ -13,7 +14,6 @@ spec:
       args: [ "index.js", "--server", "Server-A", "--port", "8000" ]
       ports:
         - containerPort: 8000
-          hostPort: 8000
       resources:
         limits:
           memory: "200M"
