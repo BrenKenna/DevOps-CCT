@@ -6,7 +6,11 @@
 # Contents:
 #      i). Run serverA in a Pod.
 #     ii). Deploy as Service.
-#    iii). Run all three
+#    iii). Deploy all three bundled in one service.
+#     iv). Deploy as seperate services
+#
+# Bastion host could be interesting:
+#  https://hub.docker.com/r/linuxserver/openssh-server
 # 
 ######################################################################
 ######################################################################
@@ -213,7 +217,7 @@ Displaying Requested Port = '8000'
 ######################################
 ######################################
 #
-# 3). Deploy a Service
+# 3). Deploy Bundled Service
 #
 ######################################
 ######################################
@@ -222,11 +226,9 @@ Displaying Requested Port = '8000'
 # See what happens
 kubectl apply -f cluster\simpleServer-deployment.yaml
 kubectl expose deployment simple-server --type=NodePort --name=simple-server
-
+kubectl describe services simple-server
 
 '''
-
-kubectl describe services simple-server
 Name:                     simple-server
 Namespace:                default
 Labels:                   app.kubernetes.io/component=yolo
@@ -317,3 +319,125 @@ curl --silent http://localhost:30228/hashing/hashMessageWithSalt \
 }
 
 '''
+
+
+######################################
+######################################
+#
+# 4). Deploy Separate Services
+#
+######################################
+######################################
+
+
+# Deploy each service
+kubectl apply -f cluster\micro-services\simpleServer-Deployment.yaml
+
+'''
+deployment.apps/simple-server-a created
+deployment.apps/simple-server-b created
+deployment.apps/simple-server-c created
+'''
+
+# Expose each deployment
+kubectl expose deployment simple-server-a --type=NodePort --name=simple-server-a
+kubectl expose deployment simple-server-b --type=NodePort --name=simple-server-b
+kubectl expose deployment simple-server-c --type=NodePort --name=simple-server-c
+
+kubectl describe services simple-server-a
+
+'''
+service/simple-server-a exposed   --> 31489/TCP
+service/simple-server-b exposed   --> 30558/TCP
+service/simple-server-c exposed   --> 31496/TCP
+'''
+
+
+# Test server-a
+curl --silent http://localhost:31489/hashing/hashMessageWithSalt \
+  -X POST \
+  -H "Content-Type: application/json" \
+  -d '{"message": "xdfrtyu7i8opl;lkj"}' \
+| jq .
+
+
+'''
+{
+  "Message": "xdfrtyu7i8opl;lkj",
+  "Hash": "077eb54554b06a4ea3ccbb84eab53b059dcae74ca098065aa8ca67e6bf712219",
+  "Salt": "59dc7b1c-a2ca-4dc0-8520-64273f91f2f3"
+}
+'''
+
+# Test server-b
+curl --silent http://localhost:30558/encrypting/encrypt \
+  -X POST \
+  -H "Content-Type: application/json" \
+  -d '{"message": "xdfrtyu7i8opl;lkj"}' \
+| jq .
+
+curl --silent http://localhost:30558/encrypting/decrypt \
+  -X POST \
+  -H "Content-Type: application/json" \
+  -d '{"message": "664f77d641222e1064d7e96d6301679c0baeacdb8774bc2be3a043c12f355e99"}' \
+| jq .
+
+'''
+
+{
+  "Message": "xdfrtyu7i8opl;lkj",
+  "EncryptedMessage": "664f77d641222e1064d7e96d6301679c0baeacdb8774bc2be3a043c12f355e99"
+}
+
+
+{
+  "Message": "664f77d641222e1064d7e96d6301679c0baeacdb8774bc2be3a043c12f355e99",
+  "DecryptedMesssage": "xdfrtyu7i8opl;lkj"
+}
+
+'''
+
+# Test server-c
+curl --silent http://localhost:31496/encrypting/encrypt \
+  -X POST \
+  -H "Content-Type: application/json" \
+  -d '{"message": "xdfrtyu7i8opl;lkj"}' \
+| jq .
+
+curl --silent http://localhost:31496/encrypting/decrypt \
+  -X POST \
+  -H "Content-Type: application/json" \
+  -d '{"message": "664f77d641222e1064d7e96d6301679c0baeacdb8774bc2be3a043c12f355e99"}' \
+| jq .
+
+curl --silent http://localhost:31496/hashing/hashMessageWithSalt \
+  -X POST \
+  -H "Content-Type: application/json" \
+  -d '{"message": "xdfrtyu7i8opl;lkj"}' \
+| jq .
+
+'''
+
+{
+  "Message": "xdfrtyu7i8opl;lkj",
+  "EncryptedMessage": "cee0f4bce53cf32833aa011a741e6b6c17d6026a4acbe940134af9410efacccd"
+}
+
+{
+  "Message": "cee0f4bce53cf32833aa011a741e6b6c17d6026a4acbe940134af9410efacccd",
+  "DecryptedMesssage": "xdfrtyu7i8opl;lkj"
+}
+
+{
+  "Message": "xdfrtyu7i8opl;lkj",
+  "Hash": "7e5c633a78d4e34c65736cd31e67240d429ed36a305b6f7575386aae380d2730",
+  "Salt": "6d8738f6-bb96-43d5-8990-8436c2cc9756"
+}
+
+'''
+
+
+
+# Kill services and deployments
+kubectl delete service/simple-server-a service/simple-server-b service/simple-server-c
+kubectl delete deployment/simple-server-a deployment/simple-server-b deployment/simple-server-c
