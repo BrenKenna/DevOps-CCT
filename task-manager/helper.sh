@@ -53,11 +53,7 @@ npm test
 
 
 # Build image
-docker build -f dockerfiles/task-manager/nodeApline.Dockerfile -t task-manager-app ./task-manager/
+docker build -f dockerfiles/task-manager/nodeApline.Dockerfile -t task-manager-app task-manager
 docker tag task-manager-app bkenna/task-manager-app:latest
 docker push task-manager-app
 
-'''
-
-
-'''

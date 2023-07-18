@@ -26,7 +26,7 @@
 
 
 # Deploy simpleServerA pod
-kubectl apply -f cluster\simpleServerA-Pod.yaml
+kubectl apply -f kubernetes-deployment\simpleServers\simpleServerA-Pod.yaml
 kubectl get pod simple-server-a -o wide
 kubectl logs simple-server-a
 kubectl describe pod simple-server-a
@@ -79,7 +79,7 @@ Containers:
 
 
 # Run simpleServerA deployment
-kubectl apply -f cluster\simpleServerA-deployment.yaml
+kubectl apply -f kubernetes-deployment\simpleServers\simpleServerA-deployment.yaml
 kubectl get pods simple-server-a-8667d8d9cb-kn7gq -o wide
 kubectl logs simple-server-a--8667d8d9cb-kn7gq
 
@@ -130,7 +130,7 @@ simple-server-a-8667d8d9cb   1         1         1       9m32s   simple-server-a
 
 
 # Run the simpleServerA service
-kubectl apply -f cluster\simpleServerA-service.yaml
+kubectl apply -f kubernetes-deployment\simpleServers\simpleServerA-service.yaml
 kubectl expose deployment simple-server-a --type=NodePort --name=simple-server-a
 kubectl get service simple-server-a -o wide
 kubectl describe services simple-server-a
@@ -224,7 +224,7 @@ Displaying Requested Port = '8000'
 
 
 # See what happens
-kubectl apply -f cluster\simpleServer-deployment.yaml
+kubectl apply -f kubernetes-deployment\simpleServerssimpleServer-deployment.yaml
 kubectl expose deployment simple-server --type=NodePort --name=simple-server
 kubectl describe services simple-server
 
@@ -440,3 +440,117 @@ curl --silent http://localhost:31496/hashing/hashMessageWithSalt \
 # Kill services and deployments
 kubectl delete service/simple-server-a service/simple-server-b service/simple-server-c
 kubectl delete deployment/simple-server-a deployment/simple-server-b deployment/simple-server-c
+
+
+
+##########################################
+##########################################
+# 
+# 5). Deploy TaskManager Service
+# 
+##########################################
+##########################################
+
+
+# Deploy & Expose named service
+kubectl apply -f kubernetes-deployment\task-manager\taskManager-Deployment.yml
+kubectl expose deployment task-manager --type=NodePort --name=task-manager
+
+kubectl describe service/task-manager
+
+'''
+NodePort:                 <unset>  32030/TCP
+'''
+
+
+# Should be nothing, because initial server port = 3000
+curl -Iv http://localhost:32030/tasks
+
+'''
+*   Trying ::1:32030...
+* Connected to localhost (::1) port 32030 (#0)
+> HEAD /tasks HTTP/1.1
+> Host: localhost:32030
+> User-Agent: curl/7.71.1
+> Accept: */*
+>
+* Recv failure: Connection was aborted
+* Closing connection 0
+curl: (56) Recv failure: Connection was aborted
+
+'''
+
+
+# Update deployment image, following change to port 80
+docker build -f dockerfiles/task-manager/nodeApline.Dockerfile -t task-manager-app task-manager
+docker tag task-manager-app bkenna/task-manager-app:withP80
+docker push task-manager-app
+
+
+# Update & apply deployment changes
+kubectl apply -f kubernetes-deployment\task-manager\taskManager-Deployment.yml
+
+
+'''
+
+---> Before
+
+NAME                           READY   STATUS    RESTARTS   AGE
+task-manager-5fbbb49f8-hc6kl   1/1     Running   0          9m43s
+task-manager-5fbbb49f8-swn44   1/1     Running   0          9m43s
+
+
+---> During
+
+NAME                           READY   STATUS        RESTARTS   AGE
+task-manager-5fbbb49f8-hc6kl   1/1     Terminating   0          10m
+task-manager-5fbbb49f8-swn44   1/1     Terminating   0          10m
+task-manager-79dc6b8fb-q9rxl   1/1     Running       0          19s
+task-manager-79dc6b8fb-r4qb7   1/1     Running       0          24s
+
+---> After
+NAME                           READY   STATUS    RESTARTS   AGE
+task-manager-79dc6b8fb-q9rxl   1/1     Running   0          39s
+task-manager-79dc6b8fb-r4qb7   1/1     Running   0          44s
+
+'''
+
+
+# Query endpoint following, deployment update
+curl --silent http://localhost:32030
+curl --silent http://localhost:32030/tasks
+curl --silent http://localhost:32030/task \
+  -X POST \
+  -H "Content-Type: application/json" \
+  -d '{"title": "donald duck", "description": "remeber what donald duck is"}' \
+| jq .
+curl --silent http://localhost:32030/tasks
+
+'''
+
+{"hello":"world"}
+[]
+{
+  "title": "donald duck",
+  "description": "remeber what donald duck is"
+}
+
+
+----> Consistency is key :c
+[
+  {
+    "title": "donald duck",
+    "description": "remeber what donald duck is"
+  },
+  {
+    "title": "donald duck",
+    "description": "remeber what donald duck is"
+  }
+]
+[
+  {
+    "title": "daffy duck",
+    "description": "remeber what this other duck is"
+  }
+]
+'''

@@ -36,7 +36,7 @@ function build() {
         return tasks;
     });
 
-        return fastify
+    return fastify
 }
 
 module.exports = build;

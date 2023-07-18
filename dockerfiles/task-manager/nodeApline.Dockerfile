@@ -7,3 +7,4 @@ COPY . /app/taskManager/
 
 # Set working directory for app
 WORKDIR /app/taskManager/
+CMD node index.js
