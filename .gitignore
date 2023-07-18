@@ -2,3 +2,6 @@ simpleServers/node_modules/
 simpleServers/package-lock.json
 simpleServers/testScripts/*/*.sh
 simpleServers/testScripts/*Tasks.sh
+task-manager/node_modules/
+task-manager/package-lock.json
+task-manager/.nyc_output/*

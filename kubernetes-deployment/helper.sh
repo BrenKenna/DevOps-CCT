@@ -331,7 +331,7 @@ curl --silent http://localhost:30228/hashing/hashMessageWithSalt \
 
 
 # Deploy each service
-kubectl apply -f cluster\micro-services\simpleServer-Deployment.yaml
+kubectl apply -f kubernetes-deployment\micro-services\simpleServer-Deployment.yaml
 
 '''
 deployment.apps/simple-server-a created
@@ -370,7 +370,7 @@ curl --silent http://localhost:31489/hashing/hashMessageWithSalt \
 '''
 
 # Test server-b
-curl --silent http://localhost:30558/encrypting/encrypt \
+curl --silent http://localhost:31815/encrypting/encrypt \
   -X POST \
   -H "Content-Type: application/json" \
   -d '{"message": "xdfrtyu7i8opl;lkj"}' \
