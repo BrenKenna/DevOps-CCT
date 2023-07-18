@@ -11,5 +11,5 @@ try {
   }
   catch (err) {
     server.log.error(err);
-    process.exit(1)
+    process.exit(1);
   }

@@ -23,7 +23,7 @@ function build() {
         if ( "title" in req.body && "description" in req.body ) {
             let task = new Task(req.body.title, req.body.description);
             tasks.push(task);
-            resp.status(200)
+            resp.status(200);
             return task;
         }
         else {
@@ -36,7 +36,7 @@ function build() {
         return tasks;
     });
 
-    return fastify
+    return fastify;
 }
 
 module.exports = build;

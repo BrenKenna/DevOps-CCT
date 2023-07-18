@@ -16,7 +16,14 @@ The GET/POST requests were tested using cURL and shown in the "*simpleServers/he
 
 Rational is that a set of docker containers would be dedicated for hashing a client-side message, and another set of containers responsible for de/encrypting client-side messages.
 
-  
+
+## Task Manager
+
+While it uses fastify, more about what goes into having images ready for integration testing. As ideally, the related container image will only be built, on the condition that the latest version, satisifies its unit testing. Comparing with the above, just serverA and serverB both pass, does not necessarily mean the serverC that talks to both can still use them. So why not test it, before doing so.
+
+Atm, its about updating live deployment. Can add elements from class work, ie github actions, regarding fullfilling this.
+
+Note on fastify, do like the request layout. Otherwise similar coding to express, but acknowledge performance gains.
   
 
 ## Notes from Testing & Development
