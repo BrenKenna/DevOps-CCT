@@ -14,7 +14,12 @@ spec:
     spec:
       containers:
       - name: task-manager
-        image: bkenna/task-manager-app:withP80
+        image: bkenna/task-manager-app
+        env:
+            - name: REDIS_SERVER
+              value: "redis-service"
+            - name: REDIS_PORT
+              value: "6379"
         resources:
           limits:
             memory: "128Mi"

@@ -509,6 +509,7 @@ task-manager-79dc6b8fb-q9rxl   1/1     Running       0          19s
 task-manager-79dc6b8fb-r4qb7   1/1     Running       0          24s
 
 ---> After
+
 NAME                           READY   STATUS    RESTARTS   AGE
 task-manager-79dc6b8fb-q9rxl   1/1     Running   0          39s
 task-manager-79dc6b8fb-r4qb7   1/1     Running   0          44s
@@ -535,8 +536,8 @@ curl --silent http://localhost:32030/tasks
   "description": "remeber what donald duck is"
 }
 
-
 ----> Consistency is key :c
+
 [
   {
     "title": "donald duck",

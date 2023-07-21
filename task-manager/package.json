@@ -18,6 +18,7 @@
   "homepage": "https://github.com/BrenKenna/DevOps-CCT#readme",
   "dependencies": {
     "fastify": "^4.20.0",
+    "redis": "^4.6.7",
     "tap": "^16.3.7",
     "tap-html": "^1.1.0",
     "tape": "^5.6.5"

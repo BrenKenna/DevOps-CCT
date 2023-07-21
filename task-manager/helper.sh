@@ -57,3 +57,123 @@ docker build -f dockerfiles/task-manager/nodeApline.Dockerfile -t task-manager-a
 docker tag task-manager-app bkenna/task-manager-app:latest
 docker push task-manager-app
 
+
+###############################
+#
+# 2). Redis Cli & Docker
+#
+###############################
+
+wget http://download.redis.io/redis-stable.tar.gz
+tar -zf redis-stable.tar.gz && cd redis-stable
+make -j 4
+
+
+docker network create -d bridge redisnet
+docker run -d -p 6379:6379 --name myredis --network redisnet redis
+docker logs 60712edca1d9
+
+src/redis-cli
+
+
+##########################################
+# 
+# 3). Deploy with Redis Service
+# 
+##########################################
+
+
+# Deploy with private service redis
+kubectl apply -f kubernetes-deployment/task-manager/redis-Deployment.yml
+kubectl apply -f kubernetes-deployment/task-manager/redis-Service.yml
+
+kubectl apply -f kubernetes-deployment/task-manager/taskManager-Deployment.yml
+kubectl apply -f kubernetes-deployment/task-manager/taskManager-Service.yml
+
+
+kubectl get services
+
+'''
+
+NAME            TYPE           CLUSTER-IP       EXTERNAL-IP   PORT(S)        AGE
+redis-service   ClusterIP      10.108.116.129   <none>        6379/TCP       99s
+task-manager    LoadBalancer   10.111.153.138   localhost     80:31479/TCP   26s
+
+'''
+
+
+# Test
+curl --silent http://localhost | jq .
+curl --silent http://localhost/tasks | jq .
+
+curl --silent http://localhost/task \
+  -X POST \
+  -H "Content-Type: application/json" \
+  -d '{"title": "donald duck", "description": "remeber what donald duck is"}' \
+| jq .
+curl --silent http://localhost/task \
+  -X POST \
+  -H "Content-Type: application/json" \
+  -d '{"title": "daffy duck", "description": "remeber what this other duck is"}' \
+| jq .
+
+'''
+{
+  "hello": "world"
+}
+[]
+{
+  "title": "donald duck",
+  "description": "remeber what donald duck is"
+}
+{
+  "title": "daffy duck",
+  "description": "remeber what this other duck is"
+}
+
+'''
+
+
+# Check redis persistence, and view logs
+curl --silent http://localhost/tasks | jq .
+kubectl logs -l app=task-manager | jq .
+
+'''
+
+--> Can get both
+
+[
+  {
+    "title": "donald duck",
+    "description": "remeber what donald duck is"
+  },
+  {
+    "title": "daffy duck",
+    "description": "remeber what this other duck is"
+  }
+]
+
+
+--> POSTs went through different pods
+
+{
+  "hostname": "task-manager-6df945dc55-6jqdt",
+  "req": {
+    "method": "POST",
+    "url": "/task",
+    "hostname": "localhost",
+    "remoteAddress": "192.168.65.3",
+    "remotePort": 50650
+  }
+}
+{
+  "hostname": "task-manager-6df945dc55-hxzp2",
+  "req": {
+    "method": "POST",
+    "url": "/task",
+    "hostname": "localhost",
+    "remoteAddress": "192.168.65.3",
+    "remotePort": 50724
+  }
+}
+'''
