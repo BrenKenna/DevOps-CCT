@@ -9,5 +9,6 @@ spec:
   containers:
   - name: spark-driver-pod
     image: bkenna/spark
-    ports:
-      - containerPort: 3000
+    env:
+    - name: SPARK_USER
+      value: "spark"

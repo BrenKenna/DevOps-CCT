@@ -1,0 +1,32 @@
+# Namespace for spark cluster
+apiVersion: v1
+kind: Namespace
+metadata:
+    name: spark-space
+    labels:
+        name: spark-space
+
+---
+
+# Service account for spark
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: spark
+  namespace: spark-space
+
+---
+
+# Cluster Role Binding linked to the "edit" cluster role
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: spark-role
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: edit
+subjects:
+- kind: ServiceAccount
+  name: spark
+  namespace: spark-space

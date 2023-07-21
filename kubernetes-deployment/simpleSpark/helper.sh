@@ -1,19 +1,15 @@
 #!/bin/bash
 
 # Create namespace for spark
-kubectl apply -f kubernetes-deployment/simpleSpark/spark-Namespace.yml
-kubectl apply -f kubernetes-deployment/simpleSpark/spark-AccountRole.yml
+kubectl apply -f kubernetes-deployment/simpleSpark/spark-NamespaceClusterRole.yml
 
 '''
 serviceaccount/spark created
 role.rbac.authorization.k8s.io/pod-reader created
 '''
 
-# 
-kubectl create clusterrolebinding spark-role \
-    --clusterrole=edit \
-    --serviceaccount=spark-space:spark \
-    --namespace=spark-space
+# Later for updating cluster role, instead of binding to edit
+kubectl --namespace=spark-space get clusterrole edit -o yaml
 
 '''
 clusterrolebinding.rbac.authorization.k8s.io/spark-role created
@@ -35,6 +31,8 @@ wget https://dlcdn.apache.org/spark/spark-3.4.1/spark-3.4.1-bin-hadoop3.tgz
 tar -xf spark-3.4.1-bin-hadoop3.tgz
 
 # Build docker images
+# Can build R/PySpark images: https://spark.apache.org/docs/latest/running-on-kubernetes.html#docker-images
+# Use as base image: https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/docker-custom-images-steps.html
 spark-3.4.1-bin-hadoop3/bin/docker-image-tool.sh -r bkenna -t latest build
 spark-3.4.1-bin-hadoop3/bin/docker-image-tool.sh -r bkenna -t latest push
 
@@ -47,8 +45,6 @@ kubectl run spark-test-pod \
     --serviceaccount=spark \
     -it \
     --command -- /bin/bash
-
-kubectl apply -f kubernetes-deployment/simpleSpark/spark-driver.Pod.yml
 
 
 # Proxy request to cluster
@@ -73,7 +69,7 @@ spark-3.4.1-bin-hadoop3/bin/spark-submit \
     --name sparkPi_Test \
     --class org.apache.spark.examples.SparkPi \
     --conf spark.executor.instances=3 \
-    --conf spark.kubernetes.container.image=bkenna/spark \
+    --conf spark.kubernetes.container.image=apache/spark \
     --conf spark.kubernetes.namespace=spark-space \
     --conf spark.kubernetes.container.image.pullPolicy=IfNotPresent \
     --conf spark.kubernetes.driver.podTemplateFile=./kubernetes-deployment/simpleSpark/spark-driver.Pod.yml \
@@ -83,10 +79,18 @@ spark-3.4.1-bin-hadoop3/bin/spark-submit \
     --conf spark.kubernetes.authenticate.driver.serviceAccountName=spark \
     local:///opt/spark/examples/jars/spark-examples_2.12-3.4.1.jar
 
+# Useful considerations:
+# https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/pod-templates.html
+kubectl --namespace=spark-space get pod "< POD NAME >" -o yaml | less
+
 '''
 
 23/07/21 15:38:06 INFO LoggingPodStatusWatcherImpl: Application status for spark-e943006d11124491b55c28224c81f4a5 (phase: Running)
 23/07/21 15:38:07 INFO LoggingPodStatusWatcherImpl: Application status for spark-e943006d11124491b55c28224c81f4a5 (phase: Running)
+
+--> Defaulting user to spark
+23/07/21 16:23:45 INFO SecurityManager: Changing view acls to: spark,bren
+23/07/21 16:23:45 INFO SecurityManager: Changing modify acls to: spark,bren
 
 '''
 
