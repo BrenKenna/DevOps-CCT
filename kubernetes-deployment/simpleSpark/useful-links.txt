@@ -1,0 +1,19 @@
+- Spark:
+Guide: https://spark.apache.org/docs/latest/running-on-kubernetes.html
+Volumes: https://spark.apache.org/docs/latest/running-on-kubernetes.html#using-kubernetes-volumes
+Cloud: https://spot.io/blog/setting-up-managing-monitoring-spark-on-kubernetes/#:~:text=Once%20the%20Spark%20driver%20is,otherwise%20it's%20a%20static%20number.
+AWS: https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/pod-templates.html
+
+Spark Operator: https://github.com/GoogleCloudPlatform/spark-on-k8s-operator/tree/master
+
+- K8s:
+Namespaces: https://kubernetes.io/docs/tasks/administer-cluster/namespaces-walkthrough/
+Volumes: https://kubernetes.io/docs/concepts/storage/volumes/
+Persistent Volumes Example: https://kubernetes.io/docs/tasks/configure-pod-container/configure-persistent-volume-storage/
+Resource Based Access Control: https://kubernetes.io/docs/reference/access-authn-authz/rbac/#role-and-clusterrole
+User Accounts: https://kubernetes.io/docs/reference/access-authn-authz/authentication/
+OAuth: https://kubernetes.io/docs/reference/access-authn-authz/authentication/
+
+
+- Other:
+Broader Docs: https://cloud.google.com/kubernetes-engine/docs/how-to/kubernetes-service-accounts

@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: spark-executor-pod
+  namespace: spark-space
+  labels:
+    name: spark-executor-pod
+spec:
+  containers:
+  - name: spark-executor-pod
+    image: bkenna/spark
+    ports:
+      - containerPort: 3000

@@ -5,3 +5,5 @@ simpleServers/testScripts/*Tasks.sh
 task-manager/node_modules/
 task-manager/package-lock.json
 task-manager/.nyc_output/*
+spark-3.4.1-bin-hadoop3.tgz
+spark-3.4.1-bin-hadoop3/*

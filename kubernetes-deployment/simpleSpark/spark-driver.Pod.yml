@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: spark-driver-pod
+  namespace: spark-space
+  labels:
+    name: spark-driver-pod
+spec:
+  containers:
+  - name: spark-driver-pod
+    image: bkenna/spark
+    ports:
+      - containerPort: 3000
