@@ -483,7 +483,7 @@ curl: (56) Recv failure: Connection was aborted
 
 # Update deployment image, following change to port 80
 docker build -f dockerfiles/task-manager/nodeApline.Dockerfile -t task-manager-app task-manager
-docker tag task-manager-app bkenna/task-manager-app:withP80
+docker tag task-manager-app bkenna/task-manager-app:latest
 docker push task-manager-app
 
 
@@ -555,3 +555,26 @@ curl --silent http://localhost:32030/tasks
   }
 ]
 '''
+
+
+#############################################
+#############################################
+# 
+# - Helm Chart for Task Manager
+# 
+#############################################
+#############################################
+
+# Create
+helm create task-manager-helm
+
+# Move yml after clearing default
+mv *yml task-manager-helm/templates/
+
+# Build dependencies & install into cluster
+helm dependency build kubernetes-deployment/task-manager-helm/
+helm uninstall task-manager-app
+helm install \
+  task-manager-app \
+  kubernetes-deployment/task-manager-helm/ \
+  --set redis.auth.enabled=true,redis.auth.password=D0IvK3-K0iV6!

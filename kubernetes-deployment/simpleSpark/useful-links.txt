@@ -1,3 +1,16 @@
+- Note:
+Though quite in here, having a storage layer that can later swapped for minio would be cool.
+As either can be used to put a hdfs cluster on top of. Although, its not really built for it, and would instead want to use
+the entire node for storage. Maybe for compute, but again want to use all these resources for compute.
+
+Also would want to avoid the dynamic registering, deregistering of data/name (HA, where to fetch config ex). Adds a lot of pain,
+like storage should not scale down, only freed-up from maintenace, as it leads to data loss. Scenario with k8s is better for reading
+from durable persistent storage.
+
+So storage and Name/Datanode can looked at separately, as both are useful & build experience. But ultimately just an exercise, that
+can benefitted when context is considered.
+Seems mapping docker compose up, to helm charts would make things usable in k8s land. Also a useful
+
 - Spark:
 Guide: https://spark.apache.org/docs/latest/running-on-kubernetes.html
 Volumes: https://spark.apache.org/docs/latest/running-on-kubernetes.html#using-kubernetes-volumes
@@ -17,3 +30,4 @@ OAuth: https://kubernetes.io/docs/reference/access-authn-authz/authentication/
 
 - Other:
 Broader Docs: https://cloud.google.com/kubernetes-engine/docs/how-to/kubernetes-service-accounts
+https://downloads.apache.org/hadoop/common/hadoop-3.3.6/hadoop-3.3.6.tar.gz

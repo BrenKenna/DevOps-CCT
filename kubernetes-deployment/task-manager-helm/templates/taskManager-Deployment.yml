@@ -1,23 +1,25 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: task-manager
+  name: {{ .Values.taskManager.appName }}
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: task-manager
+      app: {{ .Values.taskManager.appName }}
   template:
     metadata:
       labels:
-        app: task-manager
+        app: {{ .Values.taskManager.appName }}
     spec:
       containers:
-      - name: task-manager
-        image: bkenna/task-manager-app
+      - name: {{ .Values.taskManager.appName }}
+        image: {{ .Values.taskManager.image }}
         env:
             - name: REDIS_SERVER
-              value: "redis-service"
+              value: {{ .Values.taskManager.redisHost }}
+            - name: REDIS_PASS
+              value: {{ .Values.taskManager.redisPass }}
             - name: REDIS_PORT
               value: "6379"
         resources:

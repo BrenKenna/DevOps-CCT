@@ -1,0 +1,13 @@
+# 
+# Would much prefer secrets to be accessed from a file mounted to container
+#   -> Any encoding here is as useful as plain text, just looks mildly better
+# 
+
+taskManager:
+  image: bkenna/task-manager-app
+  appName: task-manager
+  redisHost: task-manager-app-redis-master
+  redisPass: RDBJdkszLUswaVY2ISEK
+
+redis:
+    architecture: replication

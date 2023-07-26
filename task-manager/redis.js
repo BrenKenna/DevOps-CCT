@@ -1,9 +1,12 @@
 const { createClient } = require('redis');
 
 async function saveToRedis(task) {
-    const { REDIS_SERVER, REDIS_PORT } = process.env
+    const { REDIS_SERVER, REDIS_PORT, REDIS_PASS } = process.env
+    const passDec = Buffer.from(REDIS_PASS, 'base64').toString('ascii');
+    console.log(`Redis Password:\n${REDIS_PASS}\nRedis Decode Pass:\t${passDec}`);
     const client = createClient({
         url: `redis://${REDIS_SERVER}:${REDIS_PORT}`,
+        auth_pass: `${passDec}`
     });
     client.connect();
     taskJSON = {
@@ -17,9 +20,12 @@ async function saveToRedis(task) {
 }
 
 async function getTasksFromRedis() {
-    const { REDIS_SERVER, REDIS_PORT } = process.env
+    const { REDIS_SERVER, REDIS_PORT, REDIS_PASS } = process.env
+    const passDec = Buffer.from(REDIS_PASS, 'base64').toString('ascii');
+    console.log(`Redis Password:\t${REDIS_PASS}\nRedis Decode Pass:\t${passDec}`);
     const client = createClient({
         url: `redis://${REDIS_SERVER}:${REDIS_PORT}`,
+        auth_pass: `${passDec}`
     });
     client.connect();
     const redisTasks = await client.get('tasks') ?? '[]';

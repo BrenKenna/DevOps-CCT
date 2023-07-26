@@ -7,3 +7,6 @@ task-manager/package-lock.json
 task-manager/.nyc_output/*
 spark-3.4.1-bin-hadoop3.tgz
 spark-3.4.1-bin-hadoop3/*
+hadoop-3.3.6/*
+hadoop-3.3.6.tar.gz
+kubernetes-deployment/task-manager-helm/charts/redis-17.13.2.tgz
