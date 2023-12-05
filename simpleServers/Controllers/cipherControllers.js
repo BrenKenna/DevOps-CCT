@@ -15,6 +15,7 @@ const msgEncryption = (req, resp, next) => {
     
     // Handle input message
     appLogger.info(`A new encryption request has come in`);
+    appLogger.info(`A new test request of type '${req.method}' 'has come in on '${req.originalUrl}' from '${req.ips}' named '${req.hostname}'`);
     appLogger.info(req.body);
     let output = msgHandler.encryptMsg(req.body.message)
     appLogger.info(output);
@@ -29,6 +30,7 @@ const msgDecryption = (req, resp, next) => {
     
     // Handle input message
     appLogger.info(`A new decryption request has come in`);
+    appLogger.info(`A new test request of type '${req.method}' 'has come in on '${req.originalUrl}' from '${req.ips}' named '${req.hostname}'`);
     appLogger.info(req.body);
     let output = msgHandler.decryptMsg(req.body.message);
     appLogger.info(output);

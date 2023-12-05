@@ -14,6 +14,7 @@ const hashMsg = (req, resp, next) => {
 
     // Log request
     appLogger.info("A new hashing request has come in");
+    appLogger.info(`A new test request of type '${req.method}' 'has come in on '${req.originalUrl}' from '${req.ip}' named '${req.hostname}'`);
     appLogger.info(req.body);
 
     // Process request
@@ -30,6 +31,7 @@ const hashMsgWithSalt = (req, resp, next) => {
 
     // Log request
     appLogger.info("A new hashing request has come in");
+    appLogger.info(`A new test request of type '${req.method}' 'has come in on '${req.originalUrl}' from '${req.ip}' named '${req.hostname}'`);
     appLogger.info(req.body);
 
     // Process request

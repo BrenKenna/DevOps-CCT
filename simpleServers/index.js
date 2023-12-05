@@ -27,14 +27,27 @@ const parser = new Parser();
 parser.setDescription("Simple web server, for kubernetes tinkering with a Server-A & Server-B.");
 parser.addArg("Server", "Which server to run", "-S,--server");
 parser.addArg("Port", "Which port to listen on", "-P,--port");
+parser.addArg("Host", "Which IP to listen on", "-H,--host")
 parser.updateGlobalVariables();
 const
     server = parser.getGlobalArgumentValue("Server"),
     port = parser.getGlobalArgumentValue("Port")
 ;
+
+let host;
+if (parser.getGlobalArgumentValue("Host") == null) {
+    host = "0.0.0.0";
+    appLogger.info("Undefined host, using '0.0.0.0'");
+}
+else {
+    host = parser.getGlobalArgumentValue("Host");
+    appLogger.info(`Host has been defined to '${host}'`);
+}
+
 appLogger.info(`
 Displaying Requested Server = '${server}'
-Displaying Requested Port = '${port}'\n`);
+Displaying Requested Port = '${port}'
+Displaying Requested Host = ${host}\n`);
 appLogger.info(parser);
 
 
@@ -46,13 +59,12 @@ appLogger.info(parser);
 
 // Configure http server & the message handler
 const
-    app = express(),
-    host = '0.0.0.0'
+    app = express();
+    app.use(bodyParser.json());
+    app.use(bodyParser.urlencoded({
+        extended: true
+    }))
 ;
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({
-    extended: true
-}));
 
 
 /**
@@ -63,7 +75,7 @@ app.use(bodyParser.urlencoded({
 
 // Testing
 app.get("/", (req, resp) => {
-    appLogger.info(`A new test request has come in`);
+    appLogger.info(`A new test request of type '${req.method}' 'has come in on '${req.baseURI}' from '${req.ip}' named '${req.hostname}'`);
     let output = {
         "Hello": "World!!!"
     };
