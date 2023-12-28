@@ -35,6 +35,13 @@ spec:
             cpu: "500m"
         ports:
         - containerPort: 80
+        volumeMounts:
+          - name: secret-volume
+            mountPath: /etc/secret-volume
+      volumes:
+        - name: secret-volume
+          secret:
+            secretName: simple-server-secret
 
 ---
 
@@ -45,6 +52,7 @@ spec:
 # 
 ##########################################
 ##########################################
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -75,6 +83,12 @@ spec:
             cpu: "500m"
         ports:
         - containerPort: 80
+        env:
+        - name: SECRET_DATA
+          valueFrom:
+            secretKeyRef:
+              name: simple-server-secret
+              key: userID
 
 ---
 
@@ -85,6 +99,7 @@ spec:
 # 
 ##########################################
 ##########################################
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -115,3 +130,10 @@ spec:
             cpu: "500m"
         ports:
         - containerPort: 80
+        volumeMounts:
+          - name: secret-volume
+            mountPath: /etc/secret-volume
+      volumes:
+        - name: secret-volume
+          secret:
+            secretName: simple-server-secret
